@@ -109,7 +109,7 @@ def parse_args():
         nargs="*",
         help=(
             "One or more kernels used to construct affinity matrix."
-            "Available options are: pearson, spearman, "
+            " Available options are: pearson, spearman, "
             "normalized_angle, cosine, gaussian or None."
         ),
     )
@@ -118,8 +118,8 @@ def parse_args():
         "-a",
         nargs="*",
         help=(
-            "One or more approach for the dimensionality reduction."
-            "Available options are: pca, dm, le."
+            "One or more approaches for the dimensionality reduction."
+            " Available options are: pca, dm, le."
         ),
     )
     return parser.parse_args()
