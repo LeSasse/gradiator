@@ -44,7 +44,7 @@ def validate_args(args):
     if args.kernel is None:
         args.kernel = all_kernels
     else:
-        args.kernel = [k if k != "None" else None for k in args.kernels]
+        args.kernel = [k if k != "None" else None for k in args.kernel]
         for k in args.kernel:
             assert k in all_kernels, f"{k} not a valid kernel!"
 
@@ -162,7 +162,7 @@ def main():
     n_total_grads = (
         len(args.sparsity)
         * len(args.approach)
-        * len(args.kernels)
+        * len(args.kernel)
         * args.n_components
     )
     i_grad = 0
