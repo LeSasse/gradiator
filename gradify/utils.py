@@ -80,8 +80,7 @@ def map_to_atlas(marker, atlas):
         value = marker[roi - 1]
         marker_img_array[atlas_array == roi] = value
 
-    marker_img_array[np.isnan(marker_img_array)] = marker_min - 20000
-    marker_img_array[atlas_array == 0] = marker_min - 20000
+    marker_img_array[atlas_array == 0] = np.nan
     grad_img = image.new_img_like(atlas, marker_img_array)
     grad_img.header["cal_max"] = marker_max
     grad_img.header["cal_min"] = marker_min
