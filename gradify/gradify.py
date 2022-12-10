@@ -46,14 +46,8 @@ def validate_args(args):
     else:
         args.kernel = [k if k != "None" else None for k in args.kernel]
     
-    for k in args.kernel:
-        assert k in all_kernels, f"{k} not a valid kernel!"
-
     if args.approach is None:
         args.approach = all_approaches
-    
-    for a in args.approach:
-        assert a in all_approaches, f"{a} not a valid approach!"
 
     return args
 
