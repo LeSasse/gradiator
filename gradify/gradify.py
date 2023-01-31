@@ -45,7 +45,7 @@ def validate_args(args):
         args.kernel = all_kernels
     else:
         args.kernel = [k if k != "None" else None for k in args.kernel]
-    
+
     if args.approach is None:
         args.approach = all_approaches
 
@@ -85,7 +85,6 @@ def parse_args():
     parser.add_argument(
         "--n_components",
         "-n",
-        nargs="*",
         type=int,
         help=("Number of components to extract. (Int: default 5)"),
     )
