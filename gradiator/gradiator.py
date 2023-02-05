@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 from brainspace.gradient import GradientMaps
 
-from gradify import check_symmetric, load_atlas, load_matrix, map_to_atlas
+from gradiator import check_symmetric, load_atlas, load_matrix, map_to_atlas
 
 
 def validate_args(args):
@@ -68,7 +68,7 @@ def parse_args():
         type=str,
         help=(
             "Path to the .csv or .tsv file containing the covariance matrix."
-            "gradify assumes that the first row is the column names, "
+            "gradiator assumes that the first row is the column names, "
             "and the first column is the index of the matrix."
           )
     )

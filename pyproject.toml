@@ -7,7 +7,7 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "gradify"
+name = "gradiator"
 description = "turn covariance matrices into brain gradients"
 readme = "README.md"
 requires-python = ">=3.7"
@@ -39,10 +39,10 @@ dependencies = [
 dynamic = ["version"]
 
 [project.urls]
-repository = "https://github.com/LeSasse/gradify"
+repository = "https://github.com/LeSasse/gradiator"
 
 [project.scripts]
-gradify = "gradify.gradify:main"
+gradiator = "gradiator.gradiator:main"
 
 [project.optional-dependencies]
 dev = ["tox"]
@@ -52,12 +52,12 @@ dev = ["tox"]
 ################
 
 [tool.setuptools]
-packages = ["gradify"]
+packages = ["gradiator"]
 
 [tool.setuptools_scm]
 version_scheme = "python-simplified-semver"
 local_scheme = "no-local-version"
-write_to = "gradify/_version.py"
+write_to = "gradiator/_version.py"
 
 [tool.black]
 line-length = 79

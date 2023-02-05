@@ -1,18 +1,18 @@
-# gradify
+# gradiator
 Command line tool turn covariance matrices in tsv or csv files into gradients.
 
 
-gradify is heavily based on the fantastic brainspace toolbox, so make sure to
+gradiator is heavily based on the fantastic brainspace toolbox, so make sure to
 check out its [documentation](https://brainspace.readthedocs.io/en/latest/index.html)
 and the [related paper](https://www.nature.com/articles/s42003-020-0794-7).
 
-The idea of gradify is to provide a quick and easy-to-use command line interface for the
-computation of gradients using some symmetric covariance matrix in a csv or tsv file. gradify
+The idea of gradiator is to provide a quick and easy-to-use command line interface for the
+computation of gradients using some symmetric covariance matrix in a csv or tsv file. gradiator
 assumes that the first row of this matrix contains the column names, and like-wise it assumes
 that the first column represents the index of the matrix.
 
 The output gradients will be mapped to a NIfTI image in the same space as the volumetric atlas
-you provide to gradify.
+you provide to gradiator.
 
 # Set up
 
@@ -24,26 +24,26 @@ source .examplevenv/bin/activate
 pip install -U pip
 ```
 
-You can simply install `gradify` via PyPI:
+You can simply install `gradiator` via PyPI:
 
 ```
-pip install gradify
+pip install gradiator
 ```
 
 Alternatively, you can install from GitHub.
 Clone the repository to where you would like to install it and:
 ```
-git clone https://github.com/LeSasse/gradify.git
-cd gradify
+git clone https://github.com/LeSasse/gradiator.git
+cd gradiator
 pip install -e .
 ```
 
 # How to use
 
-Run `gradify --help`:
+Run `gradiator --help`:
 
 ```
-usage: gradify [-h] [--reference REFERENCE] [--n_components N_COMPONENTS]
+usage: gradiator [-h] [--reference REFERENCE] [--n_components N_COMPONENTS]
                [--sparsity [SPARSITY ...]] [--kernel [KERNEL ...]]
                [--approach [APPROACH ...]] [--background BACKGROUND]
                matrix nii_atlas out_folder
@@ -54,7 +54,7 @@ this case output will be generated for all possible combinations of parameters.
 
 positional arguments:
   matrix                Path to the .csv or .tsv file containing the covariance
-                        matrix. gradify assumes that the first row is the column names,
+                        matrix. gradiator assumes that the first row is the column names,
                         and the first column is the index of the matrix.
   nii_atlas             Path to the nifti file that was used as a parcellation to
                         derive the ROI's of the covariance matrix and is used to
@@ -92,16 +92,16 @@ optional arguments:
 
 # Example commands:
 
-By default, gradify will yield output for all possible combinations of gradient parameters:
+By default, gradiator will yield output for all possible combinations of gradient parameters:
 
 ```
-gradify my_covariance_matrix.tsv my_atlas.nii.gz path/to/my_desired_output_location
+gradiator my_covariance_matrix.tsv my_atlas.nii.gz path/to/my_desired_output_location
 ```
 
 To specify only a few specific parameters, you could use the provided optional arguments as follows:
 
 ```sh
-gradify \
+gradiator \
   my_covariance_matrix.tsv \
   my_atlas.nii.gz \
   path/to/my_desired_output_location \
@@ -115,7 +115,7 @@ You can also set the value of the background voxels. For example by providing th
 'nan' or 'NaN' with the `--background` option, the background will be set to 'NaN':
 
 ```
-gradify my_covariance_matrix.tsv my_atlas.nii.gz path/to/my_desired_output_location -b nan
+gradiator my_covariance_matrix.tsv my_atlas.nii.gz path/to/my_desired_output_location -b nan
 ```
 
 
@@ -133,7 +133,7 @@ gradient image is set to the lowest value on the gradient (which can often be ne
 So an example command for this can be:
 
 ```
-gradify my_covariance_matrix.tsv my_atlas.nii.gz path/to/my_desired_output_location -b 1000
+gradiator my_covariance_matrix.tsv my_atlas.nii.gz path/to/my_desired_output_location -b 1000
 ```
 
 Which will set the background voxels to the cal_min - 1000.

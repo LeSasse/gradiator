@@ -1,4 +1,4 @@
-"""Set up marker2nii package."""
+"""Set up gradiator package."""
 
 # Authors: Leonard Sasse <l.sasse@fz-juelich.de>
 # License: AGPL
