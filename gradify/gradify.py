@@ -70,7 +70,8 @@ def parse_args():
             "Path to the .csv or .tsv file containing the covariance matrix."
             "gradify assumes that the first row is the column names, "
             "and the first column is the index of the matrix."
-      )
+          )
+    )
     parser.add_argument(
         "nii_atlas",
         type=str,
