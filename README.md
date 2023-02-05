@@ -1,6 +1,7 @@
 # gradify
 Command line tool turn covariance matrices in tsv or csv files into gradients.
 
+
 gradify is heavily based on the fantastic brainspace toolbox, so make sure to
 check out its [documentation](https://brainspace.readthedocs.io/en/latest/index.html)
 and the [related paper](https://www.nature.com/articles/s42003-020-0794-7).
