@@ -207,7 +207,7 @@ def main():
             new_grad[insert_idx] = np.nan
             new_grad[new_grad == 0] = grad
             mapped = map_to_atlas(
-                new_grad, atlas, bg_subtrahend=args.background
+                new_grad, atlas, bg_subtrahend=abs(args.background)
             )
             mapped.to_filename(out_folder_setting / f"{gradient_name}.nii.gz")
             gradient_matrix[:, i_grad - 1] = new_grad
