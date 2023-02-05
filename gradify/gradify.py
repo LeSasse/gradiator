@@ -66,14 +66,17 @@ def parse_args():
     parser.add_argument(
         "matrix",
         type=str,
-        help="Path to the .csv or .tsv file containing the covariance matrix.",
-    )
+        help=(
+            "Path to the .csv or .tsv file containing the covariance matrix."
+            "gradify assumes that the first row is the column names, "
+            "and the first column is the index of the matrix."
+      )
     parser.add_argument(
         "nii_atlas",
         type=str,
         help=(
             "Path to the nifti file that was used as a parcellation to "
-            "derive the ROI's of the covariance matrix and is used to map"
+            "derive the ROI's of the covariance matrix and is used to map "
             "gradients to nifti files."
         ),
     )
@@ -81,6 +84,15 @@ def parse_args():
         "out_folder",
         type=str,
         help=("Path to the directory in which output should be stored."),
+    )
+    parser.add_argument(
+        "--reference",
+        "-r",
+        type=str,
+        help=(
+            "Path to a covariance matrix which should be used to "
+            "create reference gradients for alignment."
+        ),
     )
     parser.add_argument(
         "--n_components",
@@ -119,7 +131,8 @@ def parse_args():
     )
     parser.add_argument(
         "--background",
-        "--b",
+        "-b",
+        type=float,
         help=(
             "Set the value of background voxels (i.e. voxels that are "
             "labelled 0 in the Parcellation.). The absolute value of "
@@ -127,9 +140,12 @@ def parse_args():
             "from the minimum gradient value to determine the value of back"
             "ground voxels. If 'NaN' or 'nan' are provided, this means that "
             "background values will be set to nan floating points."
-        )
+            "In any case, 'NaN' values in the image are treated exactly the"
+            " same as background voxels."
+        ),
+        default=100,
     )
-    
+
     return parser.parse_args()
 
 
@@ -164,8 +180,6 @@ def main():
     len_grads, _ = roixroi.shape
 
     check_symmetric(no_nans)
-    # kernel    #appre = ["dm", "le", "pca"]
-    # sparsity = [0, 0.9]
 
     n_total_grads = (
         len(args.sparsity)
@@ -174,6 +188,15 @@ def main():
         * args.n_components
     )
     i_grad = 0
+
+    alignment = None
+    if args.reference is not None:
+        reference = (
+            load_matrix(args.reference).loc[~nans.values, ~nans.values].values
+        )
+        alignment = "procrustes"
+        n_total_grads *= 2
+
     gradient_matrix = np.zeros((len_grads, n_total_grads))
     column_names = []
     for kernel, approach, sparsity in product(
@@ -181,7 +204,10 @@ def main():
     ):
 
         gm = GradientMaps(
-            n_components=args.n_components, approach=approach, kernel=kernel
+            n_components=args.n_components,
+            approach=approach,
+            kernel=kernel,
+            alignment=alignment,
         )
 
         out_folder_setting = (
@@ -189,28 +215,37 @@ def main():
         )
         os.makedirs(out_folder_setting, exist_ok=True)
 
-        gm.fit(no_nans, sparsity=sparsity)
+        if args.reference is None:
+            gm.fit(no_nans, sparsity=sparsity)
+            gradients_list = [gm.gradients_.T]
+        else:
+            gm.fit([no_nans, reference], sparsity=sparsity)
+            gradients_list = [g.T for g in gm.aligned_]
 
         insert_idx = [x for x, y in enumerate(nans) if y]
 
-        for comp, grad in enumerate(gm.gradients_.T):
-            i_grad += 1
-            gradient_name = (
-                f"spars-{sparsity}_appr-{approach}_"
-                f"kernel-{kernel}_comp-{comp+1}"
-            )
+        suffixes = ["gradient", "alignmentreference"]
+        for gradients, suffix in zip(gradients_list, suffixes):
+            for comp, grad in enumerate(gradients):
+                i_grad += 1
+                gradient_name = (
+                    f"spars-{sparsity}_appr-{approach}_"
+                    f"kernel-{kernel}_comp-{comp+1}_{suffix}"
+                )
 
-            print(f"GradientMap {i_grad}/{n_total_grads}", end="\r")
-            column_names.append(gradient_name)
+                print(f"GradientMap {i_grad}/{n_total_grads}", end="\r")
+                column_names.append(gradient_name)
 
-            new_grad = np.zeros(nans.values.shape)
-            new_grad[insert_idx] = np.nan
-            new_grad[new_grad == 0] = grad
-            mapped = map_to_atlas(
-                new_grad, atlas, bg_subtrahend=abs(args.background)
-            )
-            mapped.to_filename(out_folder_setting / f"{gradient_name}.nii.gz")
-            gradient_matrix[:, i_grad - 1] = new_grad
+                new_grad = np.zeros(nans.values.shape)
+                new_grad[insert_idx] = np.nan
+                new_grad[new_grad == 0] = grad
+                mapped = map_to_atlas(
+                    new_grad, atlas, bg_subtrahend=abs(args.background)
+                )
+                mapped.to_filename(
+                    out_folder_setting / f"{gradient_name}.nii.gz"
+                )
+                gradient_matrix[:, i_grad - 1] = new_grad
 
     pd.DataFrame(gradient_matrix, columns=column_names).to_csv(
         out_folder / f"{matrix_name}_gradients.tsv", sep="\t"
