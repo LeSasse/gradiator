@@ -42,7 +42,7 @@ def check_symmetric(a, tol=1e-5):
         )
 
 
-def map_to_atlas(marker, atlas):
+def map_to_atlas(marker, atlas, bg_subtrahend):
     """Map values of a marker to the correct volumetric location in atlas.
 
     Parameters
@@ -80,7 +80,9 @@ def map_to_atlas(marker, atlas):
         value = marker[roi - 1]
         marker_img_array[atlas_array == roi] = value
 
-    marker_img_array[atlas_array == 0] = np.nan
+    marker_img_array[atlas_array == 0] = marker_min - bg_subtrahend
+    marker_img_array[np.isnan(marker_img_array)] = marker_min - bg_subtrahend
+    
     grad_img = image.new_img_like(atlas, marker_img_array)
     grad_img.header["cal_max"] = marker_max
     grad_img.header["cal_min"] = marker_min

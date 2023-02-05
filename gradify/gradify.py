@@ -117,6 +117,19 @@ def parse_args():
             " Available options are: pca, dm, le."
         ),
     )
+    parser.add_argument(
+        "--background",
+        "--b",
+        help=(
+            "Set the value of background voxels (i.e. voxels that are "
+            "labelled 0 in the Parcellation.). The absolute value of "
+            "the number handed over as 'background' will be subtracted "
+            "from the minimum gradient value to determine the value of back"
+            "ground voxels. If 'NaN' or 'nan' are provided, this means that "
+            "background values will be set to nan floating points."
+        )
+    )
+    
     return parser.parse_args()
 
 
@@ -193,7 +206,9 @@ def main():
             new_grad = np.zeros(nans.values.shape)
             new_grad[insert_idx] = np.nan
             new_grad[new_grad == 0] = grad
-            mapped = map_to_atlas(new_grad, atlas)
+            mapped = map_to_atlas(
+                new_grad, atlas, bg_subtrahend=args.background
+            )
             mapped.to_filename(out_folder_setting / f"{gradient_name}.nii.gz")
             gradient_matrix[:, i_grad - 1] = new_grad
 
